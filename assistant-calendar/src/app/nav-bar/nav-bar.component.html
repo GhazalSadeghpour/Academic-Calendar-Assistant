@@ -30,7 +30,7 @@
             <a href="profile-page">Profile</a> 
          </div>
     </div>
-    <div class="prompts">
+    <div class="prompts" *ngIf="!isLoggedIn">
         <div class="sign-in" (click)="openSignInForm()">
             Sign in
         </div>
@@ -38,7 +38,7 @@
             Get Started
         </div>
     </div>
-    <div class="logged-in invisible">
+    <div class="logged-in" *ngIf="isLoggedIn">
         <div class="logged-in-user">
             <div class="user">{{ username }}</div>
         </div>

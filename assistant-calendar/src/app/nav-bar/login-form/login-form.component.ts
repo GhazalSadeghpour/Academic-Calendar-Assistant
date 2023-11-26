@@ -30,8 +30,11 @@ export class LoginFormComponent {
 
     this.userFacade.login(user).subscribe(
       (res: any) => {
+        console.log("Login sucess: ",res)
         localStorage.setItem('currUser', res.token);
+        console.log('Token stored:', res.token);
         this.data.updateLoggedInStatus(true);
+        
         if (this.redirect === 'true') {
           this.router.navigate([this.redirectPath]);
         }
@@ -39,6 +42,7 @@ export class LoginFormComponent {
       },
       (err: any) => {
         console.log(err.error);
+        console.log('Login error:', err.error);
 
       }
     );
@@ -54,6 +58,7 @@ export class LoginFormComponent {
       this.redirect = params['redirect'];
       this.redirectPath = params['path'];
     });
+    
 
   }
 
@@ -101,4 +106,6 @@ export class LoginFormComponent {
   openForgotPasswordForm(): void {
     this.dialogRef.close('openForgotPass');
   }
+
+  
 }

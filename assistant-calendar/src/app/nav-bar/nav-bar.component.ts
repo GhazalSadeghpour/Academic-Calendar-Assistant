@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { SignUpFormComponent } from './sign-up-form/sign-up-form.component';
@@ -28,8 +29,8 @@ export class NavBarComponent {
     private userFacade: UserFacade,
   ) {}
 
-  username: string = "";
-
+  username: any;
+  isLoggedIn: boolean = false; // Initialize with the default value
   ngOnInit() {
     this.data.currRedirectedVal.subscribe(val => {
       if (val === "true") {
@@ -45,15 +46,16 @@ export class NavBarComponent {
     this.data.loggedInStatus.subscribe(val => {
 
       if (val) {
-        console.log("val",val)
+        console.log("val loggedInStatus: ",val)
        // this.userFacade.createUser(localStorage.getItem('currUser') as string)
         userInfo = localStorage.getItem('currUser');
         
           this.userFacade.getUserById(localStorage.getItem('currUser') as string).subscribe(
             (user) => {
               // Assuming the 'name' property exists in the User object
-              const username = user.username;
-              console.log('User Name:', username);
+               this.username = user.username;
+              console.log('User Name:', this.username);
+              this.isLoggedIn = true
       
               // Now, you can update your UI with the user name
               // For example, you can bind it to a property in your component
@@ -71,10 +73,11 @@ export class NavBarComponent {
         }
     
         console.log("loggedIn",loggedIn)
+        console.log('Setting prompts to invisible');
         prompts?.classList.add('invisible');
         loggedIn?.classList.remove('invisible');
         
-        this.startIdleTimeoutTimer(5000);
+        this.startIdleTimeoutTimer(500000);
       }
       else {
         prompts?.classList.remove('invisible');
@@ -90,7 +93,7 @@ export class NavBarComponent {
       prompts?.classList.add('invisible');
       loggedIn?.classList.remove('invisible');
 
-      this.startIdleTimeoutTimer(50000);
+      this.startIdleTimeoutTimer(5000000);
     }
 
   }
@@ -122,6 +125,7 @@ export class NavBarComponent {
   startIdleTimeoutTimer(time: number): void {
     this.bnIdle.startWatching(time).subscribe((isTimedOut: boolean) => {
       if (isTimedOut) {
+        console.log('Logout method called because of being idle');
         this.logout();
         this.bnIdle.stopTimer();
       }
@@ -197,10 +201,13 @@ export class NavBarComponent {
 
     dialogRef.afterClosed().subscribe(res => {
       if (res == 'logout') {
+        console.log('Logout method called');
         localStorage.removeItem('currUser');
         this.data.updateLoggedInStatus(false);
+        this.isLoggedIn = false
         this.bnIdle.stopTimer();
         this.router.navigate(['/home']);
+        console.log("Logged out succesfully")
       }
     });
 
